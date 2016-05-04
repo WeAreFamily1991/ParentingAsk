@@ -55,6 +55,7 @@
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    //测试123
    
     [self setNet];
     self.window=[[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
