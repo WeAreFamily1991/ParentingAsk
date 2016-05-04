@@ -1,0 +1,148 @@
+
+
+#import "MainVC.h"
+#import "UINavigationItem+ItemCustom.h"
+#import "MMDrawerController.h"
+#import "MMDrawerVisualState.h"
+#import "SlideVC.h"
+#import "PersonalVC.h"
+#import "MainTabBarViewController.h"
+
+@interface MainVC ()<SlideVCDelegate>
+
+@property (nonatomic, strong) UIView *viewChoose;
+
+@end
+
+@implementation MainVC
+{
+    
+    UIView *_viewChoose;
+    
+    UISegmentedControl *_segmentControl;
+    UIScrollView *_scrollView;
+    MMDrawerController *_mmDrawerController;
+    SlideVC *_slideVC;
+}
+- (UIView *)viewChoose
+{
+    if (!_viewChoose) {
+        _viewChoose = [[UIView alloc] initWithFrame:CGRectMake((ScreenWidth * 0.5 - 67), 7, 134, 32)];
+
+        _btnConnects = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_btnConnects setBackgroundImage:[UIImage imageWithFile:@"btn- contactsBlueR.png"] forState:UIControlStateSelected];
+        [_btnConnects setBackgroundImage:[UIImage imageWithFile:@"btn- contactsGrayR.png"] forState:UIControlStateNormal];
+        [_btnConnects setFrame:CGRectMake(67, 0, 67, 32)];
+        [_btnConnects setTitle:@"联系人" forState:UIControlStateNormal];
+        [_btnConnects setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [_btnConnects setTitleColor:[UIColor greenColor] forState:UIControlStateSelected];
+        [_btnConnects.titleLabel setFont:[UIFont systemFontOfSize:15.0]];
+        
+        _btnMessages = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_btnMessages setBackgroundImage:[UIImage imageWithFile:@"btn- contactsBlueL.png"] forState:UIControlStateSelected];
+        [_btnMessages setBackgroundImage:[UIImage imageWithFile:@"btn- contactsGrayL.png"] forState:UIControlStateNormal];
+        [_btnMessages setFrame:CGRectMake(0, 0, 67, 32)];
+        [_btnMessages setTitle:@"消息" forState:UIControlStateNormal];
+        [_btnMessages setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [_btnMessages setTitleColor:[UIColor greenColor] forState:UIControlStateSelected];
+        [_btnMessages.titleLabel setFont:[UIFont systemFontOfSize:15.0]];
+        
+        [_btnMessages addTarget:self action:@selector(clickChoose:) forControlEvents:UIControlEventTouchUpInside];
+        [_btnConnects addTarget:self action:@selector(clickChoose:) forControlEvents:UIControlEventTouchUpInside];
+        
+        [_viewChoose addSubview:_btnMessages];
+        [_viewChoose addSubview:_btnConnects];
+    }
+    return _viewChoose;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self.viewChoose setHidden:YES];
+    //travel
+    MainTabBarViewController *tabVC=(MainTabBarViewController*)self.tabBarController;
+    [tabVC hiddenTabbarView];
+    //
+}
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.viewChoose setHidden:NO];
+    //travel
+    MainTabBarViewController *tabVC=(MainTabBarViewController*)self.tabBarController;
+    [tabVC appearTabbarView];
+    //
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    NSNotificationCenter *notification = [NSNotificationCenter defaultCenter];
+    [notification addObserver:self selector:@selector(needRefreshHead:) name:@"notiRefreshHeadUrl" object:nil];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self.view setBackgroundColor:[UIColor whiteColor]];
+    [self.navigationItem navigationRightWithTitle:nil Img:[UIImage imageWithFile:@"app-icon.png"] Delegate:self Action:@selector(clickPersonal) IsHeader:YES];
+    [self.navigationController.navigationBar setTranslucent:NO];
+    [self.navigationItem navigationLeftWithTitle:nil Img:nil Delegate:nil Action:nil];
+    
+    _slideVC = [[SlideVC alloc] init];
+    [_slideVC setDelegate:self];
+    [_slideVC setNavigationCurrent:self.navigationController];
+    [self.view addSubview:_slideVC.view];
+    
+    [self.navigationController.navigationBar addSubview:self.viewChoose];
+    [self clickChoose:_btnMessages];
+}
+
+- (void)needRefreshHead:(NSNotification *)notification
+{
+    [self.navigationItem navigationRightWithTitle:nil Img:[UIImage imageWithFile:@"app-icon.png"] Delegate:self Action:@selector(clickPersonal) IsHeader:YES];
+}
+
+- (void)slideSwitch:(NSInteger)switchIndex
+{
+    [_btnMessages setSelected:(switchIndex == 0)];
+    [_btnConnects setSelected:(switchIndex == 1)];
+}
+
+#pragma mark 选择消息或联系人
+- (void)clickChoose:(UIButton *)sender
+{
+    if ([sender isEqual:_btnMessages]) {
+        [_btnMessages setSelected:YES];
+        [_btnConnects setSelected:NO];
+        
+        [_slideVC slideIndex:0];
+        //travel
+        MainTabBarViewController *tabVC=(MainTabBarViewController*)self.tabBarController;
+        [tabVC itemBtnClick:tabVC.msgBtn changeColorOnly:YES];
+        //
+    }
+    else {
+        [_btnConnects setSelected:YES];
+        [_btnMessages setSelected:NO];
+        
+        [_slideVC slideIndex:1];
+        //travel
+        MainTabBarViewController *tabVC=(MainTabBarViewController*)self.tabBarController;
+        [tabVC itemBtnClick:tabVC.conBtn changeColorOnly:YES];
+        //
+    }
+    
+    [_slideVC.messageVC.searchBar resignFirstResponder];
+}
+
+#pragma mark 点击个人中心
+- (void)clickPersonal
+{
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    PersonalVC *personal = [story instantiateViewControllerWithIdentifier:@"StoryIDPersonal"];
+    [self.navigationController pushViewController:personal animated:YES];
+}
+@end

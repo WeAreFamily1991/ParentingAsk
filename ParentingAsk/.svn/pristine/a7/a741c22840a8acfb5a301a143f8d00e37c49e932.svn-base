@@ -1,0 +1,12 @@
+
+
+#import <UIKit/UIKit.h>
+
+@interface UIImage (ImageOperate)
+
+/**
+ * 360度旋转Image
+ **/
++ (UIImage *)imageWithRotate:(UIImage *)image Radius:(float)radius;
+
+@end

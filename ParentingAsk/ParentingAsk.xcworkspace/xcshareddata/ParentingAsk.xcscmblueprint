@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "d5362893-120f-4d71-a024-de558a5fa3b4++9671",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "d5362893-120f-4d71-a024-de558a5fa3b4++9671" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "d5362893-120f-4d71-a024-de558a5fa3b4++9671" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "C604DDE3-C531-46E9-9031-ACBD37249B43",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "d5362893-120f-4d71-a024-de558a5fa3b4++9671" : "ParentingAsk\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "ParentingAsk",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "ParentingAsk.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/zeng.zou@112.124.23.191:88\/svn",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "d5362893-120f-4d71-a024-de558a5fa3b4++9671"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+
+// 医生列表
+
+#import "BaseTVC.h"
+
+@interface DoctorListVC : BaseTVC
+
+@property (nonatomic, copy) NSString *order_id;
+
+@end

@@ -1,0 +1,24 @@
+
+
+#import "UIImage+ImageOperate.h"
+
+@implementation UIImage (ImageOperate)
+
++ (UIImage *)imageWithRotate:(UIImage *)image Radius:(float)radius
+{
+    float newSide = MAX(image.size.width, image.size.height);
+    CGSize size = CGSizeMake(newSide, newSide);
+    UIGraphicsBeginImageContext(size);
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextTranslateCTM(ctx, newSide/2, newSide/2);
+    CGContextRotateCTM(ctx, radius);
+    CGContextDrawImage(UIGraphicsGetCurrentContext(), CGRectMake(-image.size.width / 2, -image.size.height / 2, size.width, size.height), image.CGImage);
+    
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
+
+@end

@@ -1,0 +1,55 @@
+//
+//  CellLogin.m
+//  ParentingAsk
+//
+//  Created by Jerry on 15/9/7.
+//  Copyright (c) 2015年 Jerry. All rights reserved.
+//
+
+#import "CellLogin.h"
+
+@implementation CellLogin
+
++ (CellLogin *)cellWithTableView:(UITableView *)tableView IndexPath:(NSIndexPath *)indexPath
+{
+    NSString *strIdenti = [NSString stringWithFormat:@"identiLoginVC%d", (indexPath.row + 1)];
+    CellLogin *cell = [tableView dequeueReusableCellWithIdentifier:strIdenti forIndexPath:indexPath];
+    
+    [cell.imageIcon.layer setCornerRadius:32.5];
+    [cell.imageIcon setClipsToBounds:YES];
+    
+    [cell.textUsername.layer setBorderColor:[UIColor lightGrayColor].CGColor];
+    [cell.textUsername.layer setBorderWidth:0.5f];
+    [cell.textUsername.layer setCornerRadius:3.0f];
+    [cell.textUsername setLeftViewMode:UITextFieldViewModeAlways];
+    
+    UIView *viewLeft = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+    UIImageView *imageLeft = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 20, 23)];
+    [imageLeft setImage:[UIImage imageWithFile:@"icon-people.png"]];
+    [viewLeft addSubview:imageLeft];
+    [cell.textUsername setLeftView:viewLeft];
+    
+    [cell.textPassword.layer setBorderColor:[UIColor lightGrayColor].CGColor];
+    [cell.textPassword.layer setBorderWidth:0.5f];
+    [cell.textPassword.layer setCornerRadius:3.0f];
+    [cell.textPassword setLeftViewMode:UITextFieldViewModeAlways];
+    [cell.textPassword setLeftView:viewLeft];
+    
+    UIView *viewRight = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+    UIImageView *imageRight = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 20, 23)];
+    [imageRight setImage:[UIImage imageWithFile:@"icon-pwd.png"]];
+    [viewRight addSubview:imageRight];
+    [cell.textPassword setLeftView:viewRight];
+    
+    [cell.btnRemember setBackgroundColor:[UIColor clearColor]];
+    [cell.btnLogin.layer setCornerRadius:3.0f];
+    [cell.btnLogin setBackgroundColor:SystemGreenColor];
+    [cell.btnRegist.layer setCornerRadius:3.0f];
+    [cell.btnRegist setBackgroundColor:SystemGreenColor];
+    
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    
+    return cell;
+}
+
+@end

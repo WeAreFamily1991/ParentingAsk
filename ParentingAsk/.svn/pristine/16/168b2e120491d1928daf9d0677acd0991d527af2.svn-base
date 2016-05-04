@@ -1,0 +1,179 @@
+
+
+#import "AppDelegate.h"
+#import "LoginVC.h"
+#import <EaseMob.h>
+#import "ChatViewController.h"
+
+#define kEaseKey  @"szzsit#ylzx"
+
+//企业号证书配置
+//#if DEBUG
+//#define kEaseCer  @"w1d"
+//#else
+//#define kEaseCer  @"w1p"
+//#endif
+
+//appstore 账号证书配置
+#if DEBUG
+#define kEaseCer  @"Apns_Dev"
+#else
+#define kEaseCer  @"Apns_Pro"
+#endif
+
+@interface AppDelegate ()<EMChatManagerDelegate>
+{
+    //判断是否进入后台，处理推送消息问题
+    BOOL _isInBackground;
+}
+@end
+
+@implementation AppDelegate
+
++ (AppDelegate *)shareAppDelegate
+{
+    static AppDelegate *appdelegate;
+    static dispatch_once_t onceToken = 0;
+    dispatch_once(&onceToken, ^{
+        appdelegate = [[AppDelegate alloc] init];
+    });
+    return appdelegate;
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    sleep(2);
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    [self.window setBackgroundColor:[UIColor whiteColor]];
+    
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    LoginVC *loginVC = [story instantiateViewControllerWithIdentifier:@"StoryIDLogin"];
+    _navigation = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    [self.window setRootViewController:_navigation];
+    [self.window makeKeyAndVisible];
+    
+
+    //注册环信
+    [[EaseMob sharedInstance] registerSDKWithAppKey:kEaseKey apnsCertName:kEaseCer otherConfig:@{kSDKConfigEnableConsoleLogger:@YES}];
+    [[EaseMob sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+    [self registerRemoteNotification];
+    
+    //判断是否是点击推送消息进入程序，是则执行自动登录
+    if (launchOptions) {
+        NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        if (userInfo) {
+            [loginVC clickLogin];
+        }
+    }
+    
+    return YES;
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    if (application.applicationState == UIApplicationStateActive) {
+        UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+        localNotification.userInfo = userInfo;
+        localNotification.soundName = UILocalNotificationDefaultSoundName;
+        localNotification.alertBody = [[userInfo objectForKey:@"aps"] objectForKey:@"alert"];
+        localNotification.fireDate = [NSDate date];
+        [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+    }
+    
+    NSLog(@"\n\n\n\n\nreturn data: %@", userInfo);
+}
+
+//注册推送
+- (void)registerRemoteNotification{
+    UIApplication *application = [UIApplication sharedApplication];
+    application.applicationIconBadgeNumber = 0;
+    
+    if([application respondsToSelector:@selector(registerUserNotificationSettings:)])
+    {
+        UIUserNotificationType notificationTypes = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
+        [application registerUserNotificationSettings:settings];
+    }
+  
+    if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
+        [application registerForRemoteNotifications];
+        UIUserNotificationType notificationTypes = UIUserNotificationTypeBadge |
+        UIUserNotificationTypeSound |
+        UIUserNotificationTypeAlert;
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
+        [application registerUserNotificationSettings:settings];
+    }
+    else{
+        UIRemoteNotificationType notificationTypes = UIRemoteNotificationTypeBadge |
+        UIRemoteNotificationTypeSound |
+        UIRemoteNotificationTypeAlert;
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:notificationTypes];
+    }
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    [self saveUnreadMessageToSandBox];
+    //此处注册一个通知，进入后台，改变聊天收消息的delegate，试试吧
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"notiInBackground" object:nil];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"mutUnReadMsg"];
+    application.applicationIconBadgeNumber = 0;
+
+    [[EaseMob sharedInstance].chatManager removeDelegate:self];
+    [[EaseMob sharedInstance] applicationDidEnterBackground:application];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"notiInForeground" object:nil];
+    
+    //唤起程序的时候，对对应的基本控制器发出通知
+    if (![_navigation.topViewController isKindOfClass:[ChatViewController class]]) {
+//        UIApplicationState state = application.applicationState;
+        NSString *strVC = [HTTPRequest shareRequest].currentBaseVC;
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"notiEnterForeground" object:strVC];
+    }
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"mutUnReadMsg"];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    [[EaseMob sharedInstance] applicationWillEnterForeground:application];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+    [self saveUnreadMessageToSandBox];
+    [[EaseMob sharedInstance] applicationWillTerminate:application];
+}
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
+    [application registerForRemoteNotifications];
+}
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    [[EaseMob sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    [[EaseMob sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:error];
+    
+    NSLog(@"return data: 注册device token失败");
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    UIApplicationState state = application.applicationState;
+    if (state == UIApplicationStateActive && ![_navigation.topViewController isKindOfClass:[ChatViewController class]]) {
+        [MBProgressHUD showMessag:notification.alertBody toWindow:self.window];
+    }
+    
+    NSArray* localNotifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    if (localNotifications) {
+        for (UILocalNotification *notifi in localNotifications) {
+            [application cancelLocalNotification:notifi];
+        }
+    }
+}
+
+
+
+
+
+@end

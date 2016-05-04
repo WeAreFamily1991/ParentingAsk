@@ -1,0 +1,18 @@
+
+
+#import <UIKit/UIKit.h>
+@class Msg_Waiting;
+
+@interface CellWaiting : UITableViewCell
+
+@property (nonatomic, weak) IBOutlet UIImageView *imageAvatar;
+@property (nonatomic, weak) IBOutlet UILabel *labName;
+@property (nonatomic, weak) IBOutlet UILabel *labDesc;
+@property (nonatomic, weak) IBOutlet UILabel *labTime;
+@property (nonatomic, weak) IBOutlet UILabel *labUnRead;
+
+
+@property (nonatomic, strong) Msg_Waiting *msg_Waiting;
++ (CellWaiting *)cellWithTableView:(UITableView *)tableView;
+
+@end

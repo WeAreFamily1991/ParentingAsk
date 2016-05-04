@@ -1,0 +1,70 @@
+
+
+#import "CellPersonInfo.h"
+
+@implementation CellPersonInfo
+
++ (CellPersonInfo *)cellWithTableView:(UITableView *)tableView IndexPath:(NSIndexPath *)indexPath
+{
+    NSString *strIdenti = [NSString stringWithFormat:@"identiCellPersonInfo%ld", (long)indexPath.row + 1];
+    CellPersonInfo *cell = [tableView dequeueReusableCellWithIdentifier:strIdenti forIndexPath:indexPath];
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    [cell.imageAvatar.layer setCornerRadius:(45.0 * 0.5)];
+    [cell.imageAvatar setClipsToBounds:YES];
+    [cell.btnEdit setBackgroundColor:SystemGreenColor];
+    
+    [cell.labLevel.layer setCornerRadius:3.0f];
+    [cell.btnEdit.layer setCornerRadius:3.0f];
+    
+    [cell.btnExit.layer setCornerRadius:4.0f];
+    [cell.btnExit setBackgroundColor:SystemGreenColor];
+    
+    return cell;
+}
+
++ (CellPersonInfo *)cellWithTableView:(UITableView *)tableView Index:(NSInteger)index
+{
+    static NSString *identi = @"identiCellPersonInfo30";
+    CellPersonInfo *cell = [tableView dequeueReusableCellWithIdentifier:identi];
+    if (!cell) {
+        cell = [[CellPersonInfo alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identi];
+    }
+    else {
+        while (cell.contentView.subviews.lastObject) {
+            [cell.contentView.subviews.lastObject removeFromSuperview];
+        }
+    }
+    switch (index) {
+        case 0:
+        {
+            cell.labTitle = [[UILabel alloc] initWithFrame:CGRectMake(18.0, 12.0, 100.0, 20.0)];
+            [cell.labTitle setText:@"个人简介"];
+            [cell.labTitle setTextColor:RGBACOLOR(87.0, 87.0, 87.0, 1)];
+            [cell.labTitle setFont:[UIFont systemFontOfSize:15.0]];
+            [cell.contentView addSubview:cell.labTitle];
+            
+            cell.textViewDesc = [[UITextView alloc] initWithFrame:CGRectMake(18.0, 37.0, (ScreenWidth - 36.0), 0)];
+            [cell.textViewDesc setTextColor:[UIColor darkGrayColor]];
+            [cell.textViewDesc setFont:[UIFont systemFontOfSize:14.0]];
+            [cell.contentView addSubview:cell.textViewDesc];
+        }
+            break;
+        case 1:
+        {
+            cell.btnExit = [UIButton buttonWithType:UIButtonTypeCustom];
+            [cell.btnExit setFrame:CGRectMake(20.0, 15.0, (ScreenWidth - 50.0), 40.0)];
+            [cell.btnExit setTitle:@"认证资料上传" forState:UIControlStateNormal];
+            [cell.btnExit setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [cell.btnExit.layer setCornerRadius:4.0f];
+            [cell.btnExit.titleLabel setFont:[UIFont systemFontOfSize:15.0]];
+            [cell.btnExit setBackgroundColor:SystemGreenColor];
+            [cell.contentView addSubview:cell.btnExit];
+        }
+            break;
+        default:
+            break;
+    }
+    return cell;
+}
+
+@end

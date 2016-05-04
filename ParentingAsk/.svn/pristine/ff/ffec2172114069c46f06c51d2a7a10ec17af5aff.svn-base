@@ -1,0 +1,10 @@
+
+
+#import "BaseTVC.h"
+#import <UIKit/UIKit.h>
+
+@interface ConnectsVC : UITableViewController
+
+@property (nonatomic, strong) UINavigationController *navigationCurrent;
+
+@end

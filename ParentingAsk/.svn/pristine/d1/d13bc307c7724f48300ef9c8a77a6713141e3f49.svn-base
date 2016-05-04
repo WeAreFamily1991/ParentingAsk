@@ -1,0 +1,39 @@
+
+
+#import "CellWaiting.h"
+#import "Msg_Waiting.h"
+
+@interface CellWaiting ()
+
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *consTimeWidth;
+
+@end
+@implementation CellWaiting
+
++ (CellWaiting *)cellWithTableView:(UITableView *)tableView
+{
+    static NSString *identi = @"identiCellWaiting";
+    CellWaiting *cell = [tableView dequeueReusableCellWithIdentifier:identi];
+    if (!cell) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"CellWaiting" owner:nil options:nil] lastObject];
+    }
+    [cell.imageAvatar.layer setCornerRadius:22.0];
+    [cell.imageAvatar setClipsToBounds:YES];
+    
+    [cell.labUnRead.layer setCornerRadius:12.5];
+    [cell.labUnRead setClipsToBounds:YES];
+    
+    return cell;
+}
+
+- (void)setMsg_Waiting:(Msg_Waiting *)msg_Waiting
+{
+    _msg_Waiting = msg_Waiting;
+    
+    [self.labName setText:_msg_Waiting.nickname];
+    [self.labDesc setText:_msg_Waiting.desc];
+    [self.labTime setText:[NSString stringReturnFromTime:_msg_Waiting.time]];
+    HTTPImgView(self.imageAvatar, _msg_Waiting.headurl)
+}
+
+@end

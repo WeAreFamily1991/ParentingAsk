@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" restorationIdentifier="YasinCustomAlertView" id="iN0-l3-epB" customClass="YasinCustomAlertView">
+            <rect key="frame" x="0.0" y="0.0" width="250" height="150"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="温馨提示" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="brV-Nh-niU">
+                    <rect key="frame" x="0.0" y="0.0" width="250" height="0.0"/>
+                    <constraints>
+                        <constraint firstAttribute="height" id="910-ct-3nS"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="viP-Dv-Ljh" customClass="YasinCustomLineView">
+                    <rect key="frame" x="0.0" y="0.0" width="250" height="1"/>
+                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="i6b-Y6-Vy3"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mXe-Zr-E5T" customClass="YasinCustomLineView">
+                    <rect key="frame" x="124" y="110" width="1" height="40"/>
+                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="1" id="Zhq-1N-5Gr"/>
+                        <constraint firstAttribute="height" constant="40" id="yQe-5h-su6"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1WF-70-hRi">
+                    <rect key="frame" x="0.0" y="110" width="125" height="40"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                    <state key="normal" title="Button"/>
+                    <connections>
+                        <action selector="clickCancel:" destination="iN0-l3-epB" eventType="touchUpInside" id="3K1-79-lyI"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xwK-uM-GAC">
+                    <rect key="frame" x="125" y="110" width="125" height="40"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                    <state key="normal" title="Button"/>
+                    <connections>
+                        <action selector="clickDetermineButton:" destination="iN0-l3-epB" eventType="touchUpInside" id="3pG-xy-1Dw"/>
+                    </connections>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LQy-7b-Jrg" customClass="YasinCustomLineView">
+                    <rect key="frame" x="0.0" y="109" width="250" height="1"/>
+                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="QFH-2l-kzH"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Message" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eLK-Cb-cHN">
+                    <rect key="frame" x="5" y="0.0" width="240" height="107"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.5" green="0.4607399425" blue="0.44751257179999998" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ir4-7d-1eW">
+                    <rect key="frame" x="0.0" y="107" width="250" height="43"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                    <state key="normal" title="Button">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="clickDetermineButton2:" destination="iN0-l3-epB" eventType="touchUpInside" id="Ovx-k4-Dgy"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="LQy-7b-Jrg" secondAttribute="trailing" id="06y-5n-STo"/>
+                <constraint firstItem="xwK-uM-GAC" firstAttribute="top" secondItem="LQy-7b-Jrg" secondAttribute="bottom" id="0yS-xq-Fsm"/>
+                <constraint firstItem="brV-Nh-niU" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="7gI-2g-EOy"/>
+                <constraint firstItem="mXe-Zr-E5T" firstAttribute="leading" secondItem="1WF-70-hRi" secondAttribute="trailing" constant="-1" id="9lS-yk-Onr"/>
+                <constraint firstItem="xwK-uM-GAC" firstAttribute="leading" secondItem="mXe-Zr-E5T" secondAttribute="trailing" id="BHu-G3-Cco"/>
+                <constraint firstItem="xwK-uM-GAC" firstAttribute="height" secondItem="mXe-Zr-E5T" secondAttribute="height" id="CBv-Ko-CUJ"/>
+                <constraint firstItem="ir4-7d-1eW" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="D05-0j-JaB"/>
+                <constraint firstAttribute="bottom" secondItem="xwK-uM-GAC" secondAttribute="bottom" id="DGt-B9-KhB"/>
+                <constraint firstAttribute="trailing" secondItem="xwK-uM-GAC" secondAttribute="trailing" id="IDK-jQ-EzR"/>
+                <constraint firstAttribute="trailing" secondItem="brV-Nh-niU" secondAttribute="trailing" id="KWg-8P-iRk"/>
+                <constraint firstItem="1WF-70-hRi" firstAttribute="height" secondItem="mXe-Zr-E5T" secondAttribute="height" id="MAu-Tc-jLb"/>
+                <constraint firstAttribute="bottom" secondItem="ir4-7d-1eW" secondAttribute="bottom" id="MIK-1B-Ziw"/>
+                <constraint firstAttribute="bottom" secondItem="1WF-70-hRi" secondAttribute="bottom" id="NI5-Bx-4Ed"/>
+                <constraint firstItem="mXe-Zr-E5T" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="QQ0-39-ZTC"/>
+                <constraint firstItem="viP-Dv-Ljh" firstAttribute="top" secondItem="brV-Nh-niU" secondAttribute="bottom" id="Tqy-cB-G4Q"/>
+                <constraint firstItem="eLK-Cb-cHN" firstAttribute="top" secondItem="brV-Nh-niU" secondAttribute="bottom" id="Y9L-WQ-v0u"/>
+                <constraint firstAttribute="trailing" secondItem="ir4-7d-1eW" secondAttribute="trailing" id="bLy-HM-cRp"/>
+                <constraint firstItem="1WF-70-hRi" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="eZt-s1-dcg"/>
+                <constraint firstItem="brV-Nh-niU" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="jjU-XV-6DR"/>
+                <constraint firstItem="ir4-7d-1eW" firstAttribute="top" secondItem="eLK-Cb-cHN" secondAttribute="bottom" id="kvu-jU-l4J"/>
+                <constraint firstAttribute="bottom" secondItem="mXe-Zr-E5T" secondAttribute="bottom" id="luo-Qz-MFy"/>
+                <constraint firstAttribute="trailing" secondItem="viP-Dv-Ljh" secondAttribute="trailing" id="mIn-w9-cYl"/>
+                <constraint firstItem="xwK-uM-GAC" firstAttribute="top" secondItem="eLK-Cb-cHN" secondAttribute="bottom" constant="3" id="q58-F2-EH0"/>
+                <constraint firstAttribute="trailing" secondItem="eLK-Cb-cHN" secondAttribute="trailing" constant="5" id="rSP-ra-6Ax"/>
+                <constraint firstItem="LQy-7b-Jrg" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="t11-St-w1W"/>
+                <constraint firstItem="eLK-Cb-cHN" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="5" id="ycI-Qz-AP4"/>
+                <constraint firstItem="viP-Dv-Ljh" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="yy9-lO-wFc"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="bottomCenterLine" destination="mXe-Zr-E5T" id="KXW-KS-RGj"/>
+                <outlet property="bottomLine" destination="LQy-7b-Jrg" id="xea-Vk-l5g"/>
+                <outlet property="cancelButton" destination="1WF-70-hRi" id="iPv-jR-Gev"/>
+                <outlet property="determineButton" destination="xwK-uM-GAC" id="6lf-We-NsC"/>
+                <outlet property="determineButton2" destination="ir4-7d-1eW" id="8X1-xO-Sck"/>
+                <outlet property="message" destination="eLK-Cb-cHN" id="84T-k3-uEX"/>
+                <outlet property="title" destination="brV-Nh-niU" id="u3z-cN-jkL"/>
+                <outlet property="topLine" destination="viP-Dv-Ljh" id="mfD-71-4AG"/>
+            </connections>
+            <point key="canvasLocation" x="299" y="319"/>
+        </view>
+    </objects>
+</document>

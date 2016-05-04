@@ -1,0 +1,313 @@
+
+
+#import "WaitingVC.h"
+#import "CellWaiting.h"
+#import "PersonalVC.h"
+#import "UINavigationItem+ItemCustom.h"
+#import "ChatViewController.h"
+#import "WaitingDetailVC.h"
+#import "Msg_Waiting.h"
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
+
+
+@interface WaitingVC ()<DZNEmptyDataSetDelegate, DZNEmptyDataSetSource, EMChatManagerDelegate>
+
+@end
+
+@implementation WaitingVC
+{
+    NSMutableArray *_mutAllWaiting;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self.navigationItem navigationRightWithTitle:nil Img:[UIImage imageWithFile:@"u0.png"] Delegate:self Action:@selector(clickPersonal) IsHeader:YES];
+    
+    self.tableView.emptyDataSetDelegate = self;
+    self.tableView.emptyDataSetSource = self;
+    _mutAllWaiting = [NSMutableArray array];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self obtainServerData];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.tableView reloadData];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    if (self.WaitingVCBackBlock) {
+        self.WaitingVCBackBlock();
+    }
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return _mutAllWaiting.count;
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CellWaiting *cell = [CellWaiting cellWithTableView:tableView];
+    Msg_Waiting *msg = _mutAllWaiting[indexPath.row];
+    cell.msg_Waiting = msg;
+    [cell.labUnRead setHidden:YES];
+    
+    if (_connectsType == ConnectsAcceptOrder) {
+        //未读消息处理
+        NSUserDefaults *userDef = [NSUserDefaults standardUserDefaults];
+        NSString *strUnReadKey = [NSString stringWithFormat:@"unRead_%@", msg.Msg_Waiting_id];
+        NSString *strUnReadCount = [userDef valueForKey:strUnReadKey];
+        if (strUnReadCount.integerValue > 0) {
+            [cell.labUnRead setHidden:NO];
+            [cell.labUnRead setText:strUnReadCount];
+        }
+    }
+    
+    return cell;
+}
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    //等待中或接单中
+    if(_connectsType == ConnectsWaiting||_connectsType == ConnectsTransfer){
+    
+    
+        Msg_Waiting *msg = _mutAllWaiting[indexPath.row];
+        
+        UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        WaitingDetailVC *waitingDetail = [story instantiateViewControllerWithIdentifier:@"StoryIDWaitingDetail"];
+        [waitingDetail setConnectsDetailType:(NSInteger)_connectsType];
+        [waitingDetail setMsg_waiting:msg];
+    
+        [self.navigationController pushViewController:waitingDetail animated:YES];
+    }else{
+        //接单中
+        Msg_Waiting *msg = _mutAllWaiting[indexPath.row];
+        ChatViewController *chatVC = [[ChatViewController alloc] initWithChatter:[NSString stringWithFormat:@"%@",msg.Msg_Waiting_id] conversationType:eConversationTypeChat];
+        chatVC.strTopTitle = msg.chatlabel;
+        chatVC.strDesc = msg.desc;
+        //zou
+//        chatVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:chatVC animated:YES ];
+        
+    }
+    
+    
+    /*
+     
+     Msg_Waiting *msg = _mutPersons[indexPath.row];
+     ChatViewController *chatVC = [[ChatViewController alloc] initWithChatter:[NSString stringWithFormat:@"%@", msg.Msg_Waiting_id] conversationType:eConversationTypeChat];
+     chatVC.strTopTitle = msg.chatlabel;
+     chatVC.strDesc = msg.desc;
+     chatVC.hidesBottomBarWhenPushed=YES;
+     if (!chatVC.ChatVCBackBlock) {
+     chatVC.ChatVCBackBlock = ^(){
+     [self obtainPersons];
+     };
+     }
+     if ([AppDelegate shareAppDelegate].unreadDict && [AppDelegate shareAppDelegate].unreadDict[msg.nickname]) {
+     [[AppDelegate shareAppDelegate].unreadDict removeObjectForKey:msg.nickname];
+     [self saveUnreadMessageToSandBox];
+     [self refreshUnreadCount];
+     }
+     [self.navigationCurrent pushViewController:chatVC animated:YES];
+     */
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60.0;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 1.0f;
+}
+
+- (void)didReceiveMessage:(EMMessage *)message
+{
+    NSLog(@"return data VC: %@ \n %@", message, self);
+    
+    //发送已读回执给服务器（防止出现badgeValue累加情况）
+    [[EaseMob sharedInstance].chatManager sendReadAckForMessage:message];
+    
+    NSUserDefaults *userDef = [NSUserDefaults standardUserDefaults];
+    NSMutableArray *mutTemp = [NSMutableArray array];;
+    if ([[userDef objectForKey:@"mutUnReadMsg"] isKindOfClass:[NSArray class]]) {
+        [mutTemp addObjectsFromArray:[userDef objectForKey:@"mutUnReadMsg"]];
+    }
+    
+    //根据收到的信息判断是否弹出提示   您有新的订单，请及时查收
+    if (message.messageType == eMessageTypeChat) {
+        NSString *strCate = [message.ext valueForKey:@"type"];
+        if (strCate) {
+            if ([strCate intValue]== 2 || [strCate intValue]== 1 || [strCate intValue]== 3) {
+                if (![[message.to uppercaseString] isEqualToString:[[HTTPRequest shareRequest].currentUser.username uppercaseString]]) {
+                    return;
+                }
+                
+                NSString *strMsg = @"您有新的订单，请及时查收";
+                if ([message.ext valueForKey:@"em_apns_ext"]) {
+                    if ([[message.ext valueForKey:@"em_apns_ext"] valueForKey:@"em_push_title"]) {
+                        strMsg = [[message.ext valueForKey:@"em_apns_ext"] valueForKey:@"em_push_title"];
+                    }
+                }
+                
+                //发送本地推送
+                UILocalNotification *notification = [[UILocalNotification alloc] init];
+                notification.fireDate = [NSDate date]; //触发通知的时间
+                [notification setHasAction:NO];
+                notification.timeZone = [NSTimeZone defaultTimeZone];
+                [notification setAlertBody:strMsg];
+                notification.soundName= UILocalNotificationDefaultSoundName;
+                
+                //发送通知
+                [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+                
+                BOOL isExit = NO;
+                for (NSString *obj in mutTemp) {
+                    if ([message.messageId isEqualToString:[NSString stringWithFormat:@"%@", obj]]) {
+                        isExit = YES;
+                        break;
+                    }
+                }
+                if (!isExit) {
+                    [mutTemp addObject:message.messageId];
+                    [userDef setObject:mutTemp forKey:@"mutUnReadMsg"];
+                }
+                NSInteger unReadMsg = (NSInteger)mutTemp.count;
+                [[UIApplication sharedApplication] setApplicationIconBadgeNumber:unReadMsg];
+                
+                
+                //未读消息处理
+                if ([message.ext valueForKey:@"order_id"]) {
+                    NSString *strUnReadKey = [NSString stringWithFormat:@"unRead_%@", [message.ext valueForKey:@"order_id"]];
+                    NSString *strUnReadCount = [userDef valueForKey:strUnReadKey];
+                    if (strUnReadCount) {
+                        NSInteger unRead = strUnReadCount.integerValue;
+                        [userDef setValue:[NSString stringWithFormat:@"%zd", ++unRead] forKey:strUnReadKey];
+                    }
+                    else {
+                        [userDef setValue:@"1" forKey:strUnReadKey];
+                    }
+                    [self.tableView reloadData];
+                }
+            }
+        }
+    }
+}
+
+
+#pragma mark 点击个人中心
+- (void)clickPersonal
+{
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    PersonalVC *personal = [story instantiateViewControllerWithIdentifier:@"StoryIDPersonal"];
+    [self.navigationController pushViewController:personal animated:YES];
+}
+
+- (void)setConnectsType:(ConnectsType)connectsType
+{
+    _connectsType = connectsType;
+    switch (_connectsType) {
+        case ConnectsWaiting:
+            [self setTitle:@"等待中"];
+            break;
+        case ConnectsAcceptOrder:
+            [self setTitle:@"接单中"];
+            break;
+        case ConnectsTransfer:
+            [self setTitle:@"转接中"];
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma mark 获取服务器数据
+- (void)obtainServerData
+{
+    [self requestMessagesDone:^(id obj){
+        NSArray *arrayData = [obj valueForKey:@"data"];
+        [_mutAllWaiting removeAllObjects];
+        if ([arrayData isKindOfClass:[NSArray class]]) {
+            for (NSDictionary *dic in arrayData) {
+                Msg_Waiting *msgWait = [JsonToModel objectFromDic:dic className:@"Msg_Waiting"];
+                [_mutAllWaiting addObject:msgWait];
+            }
+        }
+        [self.tableView reloadData];
+    } withMessageType:_connectsType];
+}
+
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
+{
+    NSString *text = nil;
+    UIFont *font = nil;
+    UIColor *textColor = nil;
+    
+    NSMutableDictionary *attributes = [NSMutableDictionary new];
+    
+    text = @"";
+    switch (_connectsType) {
+        case ConnectsWaiting:
+            text = @"暂无待接入用户";
+            break;
+        case ConnectsAcceptOrder:
+            text = @"暂无待服务用户";
+            break;
+        case ConnectsTransfer:
+            text = @"暂无待转接用户";
+            break;
+        default:
+            break;
+    }
+    font = [UIFont fontWithName:@"IdealSans-Book-Pro" size:16.0];
+    textColor = [UIColor lightGrayColor];
+    
+    if (!text) {
+        return nil;
+    }
+    
+    if (font) [attributes setObject:font forKey:NSFontAttributeName];
+    if (textColor) [attributes setObject:textColor forKey:NSForegroundColorAttributeName];
+    
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
+}
+- (CGFloat)spaceHeightForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return 22.0;
+}
+
+- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
+{
+    return YES;
+}
+
+- (BOOL)emptyDataSetShouldAllowTouch:(UIScrollView *)scrollView
+{
+    return YES;
+}
+
+- (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
+{
+    return YES;
+}
+
+
+
+@end

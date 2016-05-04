@@ -1,0 +1,31 @@
+//
+//  CellTips.m
+//  ParentingAsk
+//
+//  Created by zouzeng on 15/12/29.
+//  Copyright © 2015年 Jerry. All rights reserved.
+//
+
+#import "CellTips.h"
+
+@implementation CellTips
+
++ (CellTips *)cellWithTableView:(UITableView *)tableView
+{
+    static NSString *identi = @"identiCellCellTips";
+    CellTips *cell = [tableView dequeueReusableCellWithIdentifier:identi];
+    if (!cell) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"CellTips" owner:nil options:nil] lastObject];
+    }
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    return cell;
+}
+
+- (void) loadCellWithData:(TipsInfoDetail*) detailData
+{
+    self.title_label.text = detailData.title;
+    self.time_label.text  = [ NSString stringReturnFromTime:[NSString stringWithFormat:@"%ld",detailData.time]];
+    self.content_label.text = detailData.desc;
+}
+
+@end

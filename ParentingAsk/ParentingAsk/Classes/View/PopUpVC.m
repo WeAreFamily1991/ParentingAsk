@@ -1,0 +1,229 @@
+
+
+#import "PopUpVC.h"
+#import "CellPopUp.h"
+
+@interface PopUpVC ()<UITableViewDelegate , UITableViewDataSource>
+
+@end
+
+@implementation PopUpVC
+{
+    UIImageView *_imageBg;
+    UITableView *_tableView;
+    NSArray *_arrayContent;
+}
+
+- (void)dealloc {
+    _imageBg = nil;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    _imageBg = [[UIImageView alloc] initWithFrame:CGRectMake((ScreenWidth - 145), 23, 140, 90)];
+    [_imageBg setImage:[UIImage imageWithFile:@"icon-chat-frame.png"]];
+    [_imageBg setUserInteractionEnabled:YES];
+    [self.view addSubview:_imageBg];
+    
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 10, 120, 80)];
+    [_tableView setBackgroundView:nil];
+    [_tableView setBackgroundColor:[UIColor clearColor]];
+//    [_tableView setUserInteractionEnabled:NO];
+    [_tableView setDelegate:self];
+    [_tableView setDataSource:self];
+    [_tableView setScrollEnabled:NO];
+   
+    [_imageBg addSubview:_tableView];
+    
+    _arrayContent = @[@{@"title": @"邀请评价", @"icon": @"iconfont-yaoqing.png"}, @{@"title": @"退回大厅", @"icon": @"iconfont-yituihui.png"}];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 2;
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CellPopUp *cell = [CellPopUp cellWithTableView:tableView];
+    NSDictionary *dic = _arrayContent[indexPath.row];
+    [cell.imageIcon setImage:[UIImage imageWithFile:[dic valueForKey:@"icon"]]];
+    [cell.labTitle setText:[dic valueForKey:@"title"]];
+    
+    return cell;
+}
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.delegate popUpClickIndex:indexPath.row];
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 40.0;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.001f;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self.nextResponder touchesBegan:touches withEvent:event];
+    [super touchesBegan:touches withEvent:event];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+/*
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    CGPoint touchPoint = [touch locationInView:self.view];
+    
+    NSLog(@"return data: %f, %f", touchPoint.x, touchPoint.y);
+    
+    //iphone5  171,32   311,72
+            // 171,72   311,112
+            // 171,112  311,152
+    
+   //iphone6P  263,33   403,73
+            // 263,73   403,113
+            // 263,113  403,153
+    
+    //iphone6  225,35   365,75
+            // 225,75   365,115
+            // 225,115  365,155
+    
+    if (iPhone6) {
+        CGMutablePathRef pathRef1 = CGPathCreateMutable();
+        CGPathMoveToPoint(pathRef1, NULL, 225.0, 35.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 225.0, 35.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 365.0, 35.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 225.0, 75.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 365.0, 75.0);
+        CGPathCloseSubpath(pathRef1);
+        
+        CGMutablePathRef pathRef2 = CGPathCreateMutable();
+        CGPathMoveToPoint(pathRef2, NULL, 225.0, 75.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 225.0, 75.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 365.0, 75.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 225.0, 115.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 365.0, 115.0);
+        CGPathCloseSubpath(pathRef2);
+        
+        CGMutablePathRef pathRef3 = CGPathCreateMutable();
+        CGPathMoveToPoint(pathRef3, NULL, 225.0, 115.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 225.0, 115.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 365.0, 115.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 225.0, 155.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 365.0, 155.0);
+        CGPathCloseSubpath(pathRef3);
+        
+        if (CGPathContainsPoint(pathRef1, NULL, touchPoint, NO)) {
+            //点击第一行
+            if (self.delegate && [self.delegate respondsToSelector:@selector(popUpClickIndex:)]) {
+                [self.delegate popUpClickIndex:0];
+            }
+        }
+        else if (CGPathContainsPoint(pathRef2, NULL, touchPoint, NO)) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(popUpClickIndex:)]) {
+                [self.delegate popUpClickIndex:1];
+            }
+        }
+        else if (CGPathContainsPoint(pathRef3, NULL, touchPoint, NO)) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(popUpClickIndex:)]) {
+                [self.delegate popUpClickIndex:2];
+            }
+        }
+    }
+    else if (iPhone6P) {
+        CGMutablePathRef pathRef1 = CGPathCreateMutable();
+        CGPathMoveToPoint(pathRef1, NULL, 263.0, 33.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 263.0, 33.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 403.0, 33.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 263.0, 73.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 403.0, 73.0);
+        CGPathCloseSubpath(pathRef1);
+        
+        CGMutablePathRef pathRef2 = CGPathCreateMutable();
+        CGPathMoveToPoint(pathRef2, NULL, 263.0, 73.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 263.0, 73.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 403.0, 73.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 263.0, 113.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 403.0, 113.0);
+        CGPathCloseSubpath(pathRef2);
+        
+        CGMutablePathRef pathRef3 = CGPathCreateMutable();
+        CGPathMoveToPoint(pathRef3, NULL, 263, 113.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 263.0, 113.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 403.0, 113.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 263.0, 153.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 403.0, 153.0);
+        CGPathCloseSubpath(pathRef3);
+        
+        if (CGPathContainsPoint(pathRef1, NULL, touchPoint, NO)) {
+            //点击第一行
+            if (self.delegate && [self.delegate respondsToSelector:@selector(popUpClickIndex:)]) {
+                [self.delegate popUpClickIndex:0];
+            }
+        }
+        else if (CGPathContainsPoint(pathRef2, NULL, touchPoint, NO)) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(popUpClickIndex:)]) {
+                [self.delegate popUpClickIndex:1];
+            }
+        }
+        else if (CGPathContainsPoint(pathRef3, NULL, touchPoint, NO)) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(popUpClickIndex:)]) {
+                [self.delegate popUpClickIndex:2];
+            }
+        }
+    }
+    else if (iPhone5 || iPhone4) {
+        CGMutablePathRef pathRef1 = CGPathCreateMutable();
+        CGPathMoveToPoint(pathRef1, NULL, 171.0, 32.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 171.0, 32.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 311.0, 32.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 171.0, 72.0);
+        CGPathAddLineToPoint(pathRef1, NULL, 311.0, 72.0);
+        CGPathCloseSubpath(pathRef1);
+        
+        CGMutablePathRef pathRef2 = CGPathCreateMutable();
+        CGPathMoveToPoint(pathRef2, NULL, 171.0, 72.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 171.0, 72.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 311.0, 72.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 171.0, 112.0);
+        CGPathAddLineToPoint(pathRef2, NULL, 311.0, 112.0);
+        CGPathCloseSubpath(pathRef2);
+        
+        CGMutablePathRef pathRef3 = CGPathCreateMutable();
+        CGPathMoveToPoint(pathRef3, NULL, 171.0, 112.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 171.0, 112.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 311.0, 112.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 171.0, 152.0);
+        CGPathAddLineToPoint(pathRef3, NULL, 311.0, 152.0);
+        CGPathCloseSubpath(pathRef3);
+        
+        if (CGPathContainsPoint(pathRef1, NULL, touchPoint, NO)) {
+            //点击第一行
+            if (self.delegate && [self.delegate respondsToSelector:@selector(popUpClickIndex:)]) {
+                [self.delegate popUpClickIndex:0];
+            }
+        }
+        else if (CGPathContainsPoint(pathRef2, NULL, touchPoint, NO)) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(popUpClickIndex:)]) {
+                [self.delegate popUpClickIndex:1];
+            }
+        }
+        else if (CGPathContainsPoint(pathRef3, NULL, touchPoint, NO)) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(popUpClickIndex:)]) {
+                [self.delegate popUpClickIndex:2];
+            }
+        }
+    }
+
+    
+}
+ */
+
+@end

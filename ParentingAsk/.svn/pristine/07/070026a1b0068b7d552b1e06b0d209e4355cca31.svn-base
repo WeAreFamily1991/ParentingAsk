@@ -1,0 +1,8 @@
+
+// 注册页面
+
+#import "BaseTVC.h"
+
+@interface RegistVC : BaseTVC
+
+@end

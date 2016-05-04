@@ -1,0 +1,18 @@
+
+#import <UIKit/UIKit.h>
+#import "BPMKNumberBadgeView.h"
+
+@interface CellConnects : UITableViewCell
+
+@property (nonatomic, weak) IBOutlet UIImageView *imageIcon;
+@property (nonatomic, weak) IBOutlet UILabel *labTitle;
+@property (nonatomic, weak) IBOutlet UILabel *labCount;
+@property (nonatomic, weak) IBOutlet UIImageView *imageRight;
+
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *consTitleWidth;
+@property (weak, nonatomic) IBOutlet BPMKNumberBadgeView *badgeView;
+@property (weak, nonatomic) IBOutlet BPMKNumberBadgeView *badgeViewOnImg;
+
++ (CellConnects *)cellWithTableView:(UITableView *)tableView;
+
+@end

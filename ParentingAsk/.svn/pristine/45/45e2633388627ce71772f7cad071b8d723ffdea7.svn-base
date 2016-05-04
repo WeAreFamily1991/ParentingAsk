@@ -1,0 +1,219 @@
+//
+//  TipsTVC.m
+//  ParentingAsk
+//
+//  Created by zouzeng on 15/12/25.
+//  Copyright © 2015年 Jerry. All rights reserved.
+//
+
+#import "TipsTVC.h"
+#import "TipsInfo.h"
+#import "TMWebViewController.h"
+#import "CellTips.h"
+#import "AppDelegate.h"
+
+@interface TipsTVC ()
+{
+    NSMutableArray *_tipsArray;
+    
+    TipsInfo       *_tipsInfo;
+}
+
+@end
+
+@implementation TipsTVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"提示消息";
+    
+    _tipsArray = [NSMutableArray array];
+    
+    [self.navigationController.navigationBar setBarTintColor:[UIColor blackColor]];
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor whiteColor]}];
+    [self.navigationController.navigationBar setBarStyle:UIBarStyleBlackTranslucent];
+
+    [self getTipsInfoWithPageNo:1];
+    
+    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    
+    // Uncomment the following line to preserve selection between presentations.
+    // self.clearsSelectionOnViewWillAppear = NO;
+    
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+
+//用于设置cell分割线15像素空白问题
+//-(void)viewDidLayoutSubviews
+//{
+//    [super viewDidLayoutSubviews];
+//    
+//    if ([self.tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+//        [self.tableView setSeparatorInset:UIEdgeInsetsZero];
+//    }
+//    
+//    if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+//        [self.tableView setLayoutMargins:UIEdgeInsetsZero];
+//    }
+//}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [[[AppDelegate shareAppDelegate] tabVC] appearTabbarView];
+}
+
+-(void)getTipsInfoWithPageNo:(int)pageNo
+{
+    MBShow
+    
+    if (pageNo == 1) {
+        [_tipsArray removeAllObjects];
+    }
+    
+    [HTTPRequest httpWithPost:@"/cus/article" Param:@{@"pageNo":[NSNumber numberWithInt:pageNo],@"pageSize":[NSNumber numberWithInt:20] } Success:^(id obj) {
+        if (SUCCESS) {
+            
+            NSLog(@"returnData:%@",obj);
+            
+            NSDictionary *tipDic = [obj objectForKey:@"data"];
+            _tipsInfo = [[TipsInfo alloc]init];
+            _tipsInfo.lastPage = [[tipDic objectForKey:@"lastPage"] intValue];
+            _tipsInfo.pageSize = [[tipDic objectForKey:@"lastPage"] intValue];
+            _tipsInfo.pageNumber = [[tipDic objectForKey:@"lastPage"] intValue];
+            _tipsInfo.firstPage = [[tipDic objectForKey:@"lastPage"] intValue];
+            _tipsInfo.totalPage = [[tipDic objectForKey:@"lastPage"] intValue];
+            _tipsInfo.totalRow  = [[tipDic objectForKey:@"lastPage"] intValue];
+            NSArray *tipList = [tipDic objectForKey:@"list"];
+            NSMutableArray *temList =[NSMutableArray array];
+            for (NSDictionary *tempTipDetail in tipList) {
+                TipsInfoDetail *tipDetail =[[TipsInfoDetail alloc]init];
+                tipDetail.idNum = [[tempTipDetail objectForKey:@"id"] longValue];
+                tipDetail.time = [[tempTipDetail objectForKey:@"time"] longValue];
+                tipDetail.title = [tempTipDetail objectForKey:@"title"];
+                tipDetail.desc = [tempTipDetail objectForKey:@"desc"];
+                tipDetail.url = [tempTipDetail objectForKey:@"url"];
+                
+                [temList addObject:tipDetail];
+            }
+            _tipsInfo.list = temList;
+            
+            [_tipsArray addObjectsFromArray:_tipsInfo.list];
+            
+            [self.tableView reloadData];
+        }
+        
+        MBHide
+    } Fail:^(NSString *errorMsg) {
+        MBHide
+        MBE_Sys
+    }];
+}
+
+#pragma mark - Table view data source
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return _tipsArray.count;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CellTips *cell = [CellTips cellWithTableView:tableView];
+    
+    // Configure the cell...
+    [cell loadCellWithData:[_tipsArray objectAtIndex:indexPath.row]];
+    
+    return cell;
+}
+
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 100.0f;
+}
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 1.0f;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NSString *url = [(TipsInfoDetail *)[_tipsArray objectAtIndex:indexPath.row] url];
+    TMWebViewController *webVC = [[TMWebViewController alloc]initWithNibName:@"TMWebViewController" bundle:nil withUrl:url andTitle:nil];
+    [self.navigationController pushViewController:webVC animated:YES];
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == _tipsArray.count) {
+        if (_tipsInfo.pageNumber < _tipsInfo.totalPage) {
+            [self getTipsInfoWithPageNo:_tipsInfo.totalPage - _tipsInfo.pageNumber];
+        }else
+        {
+            [self showHint:@"数据已全部加载完成"];
+        }
+    }
+}
+
+/*
+// Override to support conditional editing of the table view.
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return NO if you do not want the specified item to be editable.
+    return YES;
+}
+*/
+
+/*
+// Override to support editing the table view.
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // Delete the row from the data source
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+    }   
+}
+*/
+
+/*
+// Override to support rearranging the table view.
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+}
+*/
+
+/*
+// Override to support conditional rearranging of the table view.
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return NO if you do not want the item to be re-orderable.
+    return YES;
+}
+*/
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

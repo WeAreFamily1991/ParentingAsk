@@ -1,0 +1,92 @@
+
+#import "EditPasswordVC.h"
+#import "CellEditPassword.h"
+
+@interface EditPasswordVC ()<UITextFieldDelegate>
+
+@property (nonatomic, weak) IBOutlet UITableView *tableView;
+@property (nonatomic, weak) IBOutlet UIButton *btnSave;
+
+@end
+
+@implementation EditPasswordVC
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    [self setTitle:@"修改密码"];
+    [self.view setBackgroundColor:SystemGrayColor];
+    [self.btnSave.layer setCornerRadius:3.0f];
+    [self.btnSave setBackgroundColor:SystemGreenColor];
+    [self.btnSave addTarget:self action:@selector(clickSave) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 3;
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CellEditPassword *cell = [CellEditPassword cellWithTableView:tableView IndexPath:indexPath];
+    [cell.textDesc setDelegate:self];
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    return cell;
+}
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 44.0;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.001f;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    return [textField resignFirstResponder];
+}
+
+- (void)clickSave
+{
+    CellEditPassword *cellO = (CellEditPassword *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    CellEditPassword *cellN = (CellEditPassword *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    CellEditPassword *cellNA = (CellEditPassword *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+    
+    if (cellO.textDesc.text.length == 0 || cellN.textDesc.text.length == 0 || cellNA.textDesc.text.length == 0) {
+        return;
+    }
+    else if (![cellN.textDesc.text isEqualToString:cellNA.textDesc.text]) {
+        MBE(@"两次输入密码不一致")
+    }
+    else {
+        MBShow
+        [HTTPRequest httpWithPost:@"/cus/changepd" Param:@{@"old": cellO.textDesc.text, @"new": cellNA.textDesc.text} Success:^(id obj) {
+            MBHide
+            [self.navigationController popViewControllerAnimated:YES];
+        } Fail:^(NSString *errorMsg) {
+            MBHide
+            MBE_Sys
+        }];
+    }
+}
+
+@end

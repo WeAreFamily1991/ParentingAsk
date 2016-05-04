@@ -1,0 +1,13 @@
+
+//  订单列表页
+
+#import "BaseTVC.h"
+
+
+
+@interface WaitingVC : BaseTVC
+
+@property (nonatomic, assign) ConnectsType connectsType;
+@property (nonatomic, copy) void (^WaitingVCBackBlock)();
+
+@end

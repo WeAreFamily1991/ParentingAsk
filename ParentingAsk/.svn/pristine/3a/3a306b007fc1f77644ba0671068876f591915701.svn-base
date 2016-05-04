@@ -1,0 +1,315 @@
+
+
+#import "RegistVC.h"
+#import "CellRegist.h"
+#import <MobileCoreServices/MobileCoreServices.h>
+#import "ProtocolVC.h"
+
+@interface RegistVC ()<UITextFieldDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+
+@end
+
+@implementation RegistVC
+{
+    NSString *_imagePath;
+    //验证码
+    NSString *_strVerCode;
+    
+    UITextField *_textFSelected;
+    //判断手机号码是否已经被注册
+    BOOL _isRegisted;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 7;
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CellRegist *cell = [CellRegist cellWithTableView:tableView IndexPath:indexPath];
+    [cell.textDesc setDelegate:self];
+    [cell.textDesc setTag:(indexPath.row + 1)];
+    [cell.btnSubmit addTarget:self action:@selector(clickFunc:) forControlEvents:UIControlEventTouchUpInside];
+    [cell.btnIsAgree addTarget:self action:@selector(clickFunc:) forControlEvents:UIControlEventTouchUpInside];
+    [cell.btnCamera addTarget:self action:@selector(clickFunc:) forControlEvents:UIControlEventTouchUpInside];
+    [cell.btnGetCode addTarget:self action:@selector(clickFunc:) forControlEvents:UIControlEventTouchUpInside];
+    [cell.btnRegulation addTarget:self action:@selector(clickFunc:) forControlEvents:UIControlEventTouchUpInside];
+    
+    if (iPhone6) {
+        [cell.labProtocolTemp setFont:[UIFont systemFontOfSize:11.0]];
+    }
+    else if (iPhone6P) {
+        [cell.labProtocolTemp setFont:[UIFont systemFontOfSize:12.0]];
+    }
+    else {
+        [cell.labProtocolTemp setFont:[UIFont systemFontOfSize:10.0]];
+    }
+    
+    return cell;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        return 120.0;
+    }
+    else if (indexPath.row == 5) {
+        return 50.0;
+    }
+    return 50.0;
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    _textFSelected = textField;
+}
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if (_textFSelected.text.length > 2 && _textFSelected.tag == 2) {
+        [_textFSelected resignFirstResponder];
+        MBShow
+        [HTTPRequest httpWithPost:@"/cus/exist" Param:@{@"phone": _textFSelected.text} Success:^(id obj) {
+            if (SUCCESS) {
+                MBHide
+                _isRegisted = NO;
+                if ([[obj valueForKey:@"data"] integerValue]== 1) {
+                    MBE(@"手机号码已被注册")
+                    _isRegisted = YES;
+                }
+            }
+        } Fail:^(NSString *errorMsg) {
+            MBHide
+            MBE_Sys
+        }];
+    }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    return [textField resignFirstResponder];
+}
+
+- (void)clickFunc:(UIButton *)sender
+{
+    switch (sender.tag) {
+        case 1:
+            //头像拍照
+        {
+            UIActionSheet *action=[[UIActionSheet alloc]initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"拍照" otherButtonTitles:@"从手机相册选择", nil];
+            [action showInView:self.view];
+        }
+            break;
+        case 2:
+            //获取验证码
+        {
+            [self getCode];
+        }
+            break;
+        case 3:
+            //是否阅读协议
+        {
+            [self clickIsAgree:sender];
+        }
+            break;
+        case 4:
+            //协议
+        {
+            [self clickProtocol];
+        }
+            break;
+        case 5:
+            //提交
+        {
+            [self clickRegist];
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSUInteger sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    switch (buttonIndex) {
+        case 0: //相机
+            sourceType = UIImagePickerControllerSourceTypeCamera;
+            break;
+        case 1: //相册
+            sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            break;
+        default:
+            return;
+            break;
+    }
+    [self openCamara:sourceType];
+}
+
+-(void)openCamara:(UIImagePickerControllerSourceType)sourceType
+{
+    NSArray* availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
+    BOOL canTakePicture = NO;
+    for (NSString* mediaType in availableMediaTypes) {
+        if ([mediaType isEqualToString:(NSString*)kUTTypeImage]) {
+            //支持拍照
+            canTakePicture = YES;
+            break;
+        }
+    }
+    if (!canTakePicture&&sourceType == UIImagePickerControllerSourceTypeCamera) {
+        NSLog(@"sorry, taking picture is not supported.");
+        return;
+    }
+    UIImagePickerController* imagePickerController = [[UIImagePickerController alloc] init];
+    imagePickerController.sourceType = sourceType;
+    imagePickerController.mediaTypes = [[NSArray alloc] initWithObjects:(NSString*)kUTTypeImage, nil] ;
+    imagePickerController.allowsEditing = YES;
+    imagePickerController.delegate = self;
+    [self presentViewController:imagePickerController animated:YES completion:nil];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
+{
+    [picker dismissViewControllerAnimated:YES completion:^{
+        [NSThread detachNewThreadSelector:@selector(useImage:) toTarget:self withObject:image];
+    }];
+}
+
+- (void)useImage:(UIImage *)imageChoose
+{
+    CellRegist *cell = (CellRegist *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    [cell.btnCamera setBackgroundImage:imageChoose forState:UIControlStateNormal];
+
+    NSData *imageData;
+    if (UIImagePNGRepresentation(imageChoose)) {
+        imageData = UIImagePNGRepresentation(imageChoose);
+    }
+    else {
+        imageData = UIImageJPEGRepresentation(imageChoose, 1.0);
+    }
+
+    if (imageData) {
+        [HTTPRequest httpWithUploadPhoto:imageData Success:^(id obj) {
+            if (!SUCCESS) {
+                MBE(@"上传头像失败")
+            }
+        } Fail:^(NSString *errorMsg) {
+            MBE_Sys
+        }];
+    }
+}
+
+#pragma mark - function
+
+- (void)getCode
+{
+    if (_isRegisted) {
+        MBE(@"手机号码已被注册")
+        return;
+    }
+    
+    CellRegist *cellPhone = (CellRegist *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    NSString *strPhoneNum = cellPhone.textDesc.text;
+    
+    if (strPhoneNum.length > 0) {
+        MBShow
+        [HTTPRequest httpWithPost:@"/cus/captcha" Param:@{@"phone": strPhoneNum} Success:^(id obj) {
+            if (SUCCESS) {
+                MBHide
+                MBS(@"验证码已发送")
+            }
+            else {
+                MBHide
+                MBE([obj valueForKey:@"desc"])
+            }
+        } Fail:^(NSString *errorMsg) {
+            MBHide
+            MBE_Sys
+        }];
+    }
+}
+
+- (void)clickIsAgree:(UIButton *)sender
+{
+    CellRegist *cell = (CellRegist *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:5 inSection:0]];
+    if (!sender.selected) {
+        [cell.imageIsAgree setImage:[UIImage imageWithFile:@"btn-noagree.png"]];
+    }
+    else {
+        [cell.imageIsAgree setImage:[UIImage imageWithFile:@"btn-agree.png"]];
+    }
+    sender.selected = !sender.selected;
+}
+
+- (void)clickRegist
+{
+    if (_isRegisted) {
+        MBE(@"手机号码已被注册")
+        return;
+    }
+    CellRegist *cellPhone = (CellRegist *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    NSString *strPhoneNum = cellPhone.textDesc.text;
+    
+    CellRegist *cellCode = (CellRegist *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+    NSString *strCode = cellCode.textDesc.text;
+    
+    CellRegist *cellPass = (CellRegist *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:3 inSection:0]];
+    NSString *strPass = cellPass.textDesc.text;
+    
+    CellRegist *cellPassN = (CellRegist *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:0]];
+    NSString *strPassN = cellPassN.textDesc.text;
+    
+    CellRegist *cellIsAgree = (CellRegist *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:5 inSection:0]];
+    
+    if (!strPhoneNum.length || !strCode.length || !strPass.length || !strPassN.length) {
+        MBE(@"请完善资料")
+    }
+    else if (![strPass isEqualToString:strPassN]) {
+        MBE(@"两次密码不一致")
+    }
+    else if (cellIsAgree.btnIsAgree.selected) {
+        MBE(@"请先阅读相关协议")
+    }
+    else {
+        MBShow
+        int verCode = [strCode intValue];
+        [HTTPRequest httpWithPost:@"/cus/reg" Param:@{@"phone": strPhoneNum, @"password": strPassN, @"captcha": [NSNumber numberWithInt:verCode]} Success:^(id obj) {
+            if (SUCCESS) {
+                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                [defaults setObject:strPhoneNum forKey:@"PAUserName"];
+                [defaults setObject:strPassN forKey:@"PAPassword"];
+                
+                MBS(@"注册成功")
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.7 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
+            }
+            else if ([[obj valueForKey:@"code"] intValue]== 1) {
+                MBHide
+                if ([obj valueForKey:@"desc"]) {
+                    MBE([obj valueForKey:@"desc"])
+                }
+            }
+            else {
+                MBHide
+            }
+        } Fail:^(NSString *errorMsg) {
+            MBHide
+            MBE_Sys
+        }];
+    }
+    
+}
+
+- (void)clickProtocol
+{
+    [self.navigationController pushViewController:[[ProtocolVC alloc] init] animated:YES];
+}
+@end

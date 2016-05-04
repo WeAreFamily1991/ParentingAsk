@@ -1,0 +1,163 @@
+
+//  订单主页
+
+#import "ConnectsVC.h"
+#import "CellConnects.h"
+#import "WaitingVC.h"
+#import "Msg_Waiting.h"
+#import "BPMKNumberBadgeView.h"
+
+@interface ConnectsVC ()
+@property (nonatomic) NSInteger acceptedOrderMsgCount;
+@end
+
+@implementation ConnectsVC
+{
+    NSInteger _waitingCount;
+    NSInteger _orderCount;
+    NSInteger _transferCount;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(obtainPersonCount) name:@"SlideSwitchLeft" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(obtainPersonCount) name:kNewMessageNotification object:nil];
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+
+}
+//Travel
+- (void)countUnreadMessages
+{
+    [self requestMessagesDone:^(id obj){
+        NSArray *arrayData = [obj valueForKey:@"data"];
+        _acceptedOrderMsgCount=0;
+        if ([arrayData isKindOfClass:[NSArray class]]) {
+            for (NSDictionary *dic in arrayData) {
+                Msg_Waiting *msgWait = [JsonToModel objectFromDic:dic className:@"Msg_Waiting"];
+                NSString *strUnReadKey = [NSString stringWithFormat:@"unRead_%@", msgWait.Msg_Waiting_id];
+                NSString *strUnReadCount = [[NSUserDefaults standardUserDefaults] valueForKey:strUnReadKey];
+                if (strUnReadCount.integerValue > 0) {
+                    _acceptedOrderMsgCount+=[strUnReadCount integerValue];
+                }
+            }
+        }
+        [self.tableView reloadData];
+    } withMessageType:ConnectsAcceptOrder];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 3;
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CellConnects *cell = [CellConnects cellWithTableView:tableView];
+    cell.badgeView.hidden=YES;
+    switch (indexPath.row) {
+        case 0:
+        {
+            [cell.imageIcon setImage:[UIImage imageWithFile:@"icon-wait.png"]];
+            [cell.labTitle setText:@"等待中"];
+            if (_waitingCount > 0) {
+                [cell.labCount setText:[NSString stringWithFormat:@"%zd", _waitingCount]];
+            }
+        }
+            break;
+        case 1:
+        {
+            [cell.imageIcon setImage:[UIImage imageWithFile:@"icon-Orders.png"]];
+            [cell.labTitle setText:@"接单中"];
+            if (_orderCount > 0) {
+                [cell.labCount setText:[NSString stringWithFormat:@"%zd", _orderCount]];
+            }
+            if (_acceptedOrderMsgCount>0) {
+                cell.badgeView.hidden=NO;
+                cell.badgeView.value=_acceptedOrderMsgCount;
+                cell.badgeView.shadow=NO;
+                cell.badgeView.shine=NO;
+            }
+            
+        }
+            break;
+        case 2:
+        {
+            [cell.imageIcon setImage:[UIImage imageWithFile:@"icon-switch.png"]];
+            [cell.labTitle setText:@"转接中"];
+            if (_transferCount > 0) {
+                [cell.labCount setText:[NSString stringWithFormat:@"%zd", _transferCount]];
+            }
+        }
+        default:
+            break;
+    }
+    
+    return cell;
+}
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    WaitingVC *waitVC = [[WaitingVC alloc] init];
+    [waitVC setConnectsType:indexPath.row];
+    if (!waitVC.WaitingVCBackBlock) {
+        waitVC.WaitingVCBackBlock = ^(){
+            [self obtainPersonCount];
+        };
+    }
+    [self.navigationCurrent pushViewController:waitVC animated:YES];
+    
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 1.0f;
+}
+
+- (void)obtainPersonCount
+{
+    [self countUnreadMessages];
+    NSArray *arrayUrl = @[@"/order/unserver", @"/cus/servering", @"/cus/forwarding"];
+    
+    for (NSInteger k = 0; k < arrayUrl.count; k ++) {
+        [self obtainData:arrayUrl[k] Receiver:k];
+    }
+}
+- (void)obtainData:(NSString *)urlPath Receiver:(NSInteger)receIndex
+{
+    MBShow
+    [HTTPRequest httpWithPost:urlPath Param:@{} Success:^(id obj) {
+        if (SUCCESS) {
+            NSArray *arrayData = [obj valueForKey:@"data"];
+            
+            if (receIndex == 0) {
+                _waitingCount = arrayData.count;
+            }
+            else if (receIndex == 1) {
+                _orderCount = arrayData.count;
+            }
+            else {
+                _transferCount = arrayData.count;
+            }
+            
+            [self.tableView reloadData];
+        }
+        MBHide
+    } Fail:^(NSString *errorMsg) {
+        MBHide
+        MBE_Sys
+    }];
+}
+
+
+@end

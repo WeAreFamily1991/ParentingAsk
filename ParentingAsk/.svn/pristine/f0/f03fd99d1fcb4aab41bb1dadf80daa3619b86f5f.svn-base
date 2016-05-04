@@ -1,0 +1,10 @@
+
+//  选择城市页
+
+#import "BaseVC.h"
+
+@interface ChooseCityVC : BaseVC
+
+@property (nonatomic, copy) void(^ChooseCityBlock)(NSString *strSelect, NSString *code);
+
+@end

@@ -1,0 +1,1225 @@
+/************************************************************
+ *  * EaseMob CONFIDENTIAL
+ * __________________
+ * Copyright (C) 2013-2014 EaseMob Technologies. All rights reserved.
+ *
+ * NOTICE: All information contained herein is, and remains
+ * the property of EaseMob Technologies.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from EaseMob Technologies.
+ */
+
+#import "ConvertToCommonEmoticonsHelper.h"
+#import "Emoji.h"
+
+static NSString * kStr_01 =@"/::~"  ;
+static NSString * kStr_02 =@"/::$"  ;
+static NSString * kStr_03 =@"/::X"  ;
+static NSString * kStr_04 =@"/::'(" ;
+static NSString * kStr_05 =@"/::O"  ;
+static NSString * kStr_06 =@"/:--b" ;
+static NSString * kStr_07 =@"/::T";
+static NSString * kStr_08 =@"/:,@-D";
+static NSString * kStr_09 =@"/::g";
+static NSString * kStr_10 =@"/:|-)";
+static NSString * kStr_11 =@"/::!";
+static NSString * kStr_12 =@"/::,@";
+static NSString * kStr_13 =@"/:,@f";
+static NSString * kStr_14 =@"/::-S";
+static NSString * kStr_15 =@"/:?";
+static NSString * kStr_16 =@"/:,@x";
+static NSString * kStr_17 =@"/:,@@";
+static NSString * kStr_18 =@"/::8";
+static NSString * kStr_19 =@"/:,@!";
+static NSString * kStr_20 =@"/:xx";
+static NSString * kStr_21 =@"/:bye";
+static NSString * kStr_22 =@"/:wipe";
+static NSString * kStr_23 =@"/:dig";
+static NSString * kStr_24 =@"/:&-(";
+static NSString * kStr_25 =@"/:<@";
+static NSString * kStr_26 =@"/:@>";
+static NSString * kStr_27 =@"/::-O";
+static NSString * kStr_28 =@"/:>-|";
+static NSString * kStr_29 =@"/:P-(";
+static NSString * kStr_30 =@"/::'|";
+static NSString * kStr_31 =@"/:@x";
+static NSString * kStr_32 =@"/:8*";
+static NSString * kStr_33 =@"/:pd";
+static NSString * kStr_34 =@"/:<W>";
+static NSString * kStr_35 =@"/:beer";
+static NSString * kStr_36 =@"/:basketb";
+static NSString * kStr_37 =@"/:oo";
+static NSString * kStr_38 =@"/:coffee";
+static NSString * kStr_39 =@"/:eat";
+static NSString * kStr_40 =@"/:pig";
+static NSString * kStr_41 =@"/:fade";
+static NSString * kStr_42 =@"/:cake";
+static NSString * kStr_43 =@"/:li";
+static NSString * kStr_44 =@"/:bome";
+static NSString * kStr_45 =@"/:kn";
+static NSString * kStr_46 =@"/:footb";
+static NSString * kStr_47 =@"/:ladybug";
+static NSString * kStr_48 =@"/:shit";
+static NSString * kStr_49 =@"/:gift";
+static NSString * kStr_50 =@"/:hug";
+static NSString * kStr_51 =@"/:share";
+static NSString * kStr_52 =@"/:cake";
+static NSString * kStr_53 =@"/:v";
+static NSString * kStr_54 =@"/:@)";
+static NSString * kStr_55 =@"/:jj";
+static NSString * kStr_56 =@"/:@@";
+static NSString * kStr_57 =@"/:bad";
+static NSString * kStr_58 =@"/:lvu";
+static NSString * kStr_59 =@"/:no";
+static NSString * kStr_60 =@"/:ok";
+static NSString * kStr_61 =@"/:love";
+static NSString * kStr_62 =@"/:<L>";
+static NSString * kStr_63 =@"/:jump";
+static NSString * kStr_64 =@"/:shake";
+static NSString * kStr_65 =@"/:<O>";
+static NSString * kStr_66 =@"/:circle";
+static NSString * kStr_67 =@"/:kotow";
+static NSString * kStr_68 =@"/:turn";
+static NSString * kStr_69 =@"/:skip";
+static NSString * kStr_70 =@"";
+static NSString * kStr_71 =@"";
+static NSString * kStr_72 =@"";
+static NSString * kStr_73 =@"";
+static NSString * kStr_74 =@"";
+static NSString * kStr_75 =@"";
+static NSString * kStr_76 =@"";
+static NSString * kStr_77 =@"";
+static NSString * kStr_78 =@"";
+static NSString * kStr_79 =@"";
+static NSString * kStr_80 =@"";
+static NSString * kStr_81 =@"";
+static NSString * kStr_82 =@"";
+static NSString * kStr_83 =@"";
+static NSString * kStr_84 =@"";
+static NSString * kStr_85 =@"";
+static NSString * kStr_86 =@"";
+static NSString * kStr_87 =@"";
+//static NSString * kStr_88 =@"";
+//static NSString * kStr_89 =@"";
+//static NSString * kStr_90 =@"";
+
+
+
+#define kStr_count 87
+
+@implementation ConvertToCommonEmoticonsHelper
+
+#pragma mark - emotics
++ (NSString *)convertToCommonEmoticons:(NSString *)text {
+    int allEmoticsCount = (int)[Emoji allEmoji].count;
+    NSMutableString *retText = [[NSMutableString alloc] initWithString:text];
+    for(int i=0; i<allEmoticsCount; ++i) {
+        NSRange range;
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😊"
+                                 withString:@"[):]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😃"
+                                 withString:@"[:D]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😉"
+                                 withString:@"[;)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😮"
+                                 withString:@"[:-o]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😋"
+                                 withString:@"[:p]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😎"
+                                 withString:@"[(H)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😡"
+                                 withString:@"[:@]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😖"
+                                 withString:@"[:s]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😳"
+                                 withString:@"[:$]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😞"
+                                 withString:@"[:(]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😭"
+                                 withString:@"[:'(]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😐"
+                                 withString:@"[:|]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+//        range.location = 0;
+//        range.length = retText.length;
+//        [retText replaceOccurrencesOfString:@"😇"
+//                                 withString:@"[(a)]"
+//                                    options:NSLiteralSearch
+//                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😬"
+                                 withString:@"[8o|]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😆"
+                                 withString:@"[8-|]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😱"
+                                 withString:@"[+o(]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🎅"
+                                 withString:@"[<o)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😴"
+                                 withString:@"[|-)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😕"
+                                 withString:@"[*-)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😷"
+                                 withString:@"[:-#]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😯"
+                                 withString:@"[:-*]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😏"
+                                 withString:@"[^o)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😑"
+                                 withString:@"[8-)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"💖"
+                                 withString:@"[(|)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"💔"
+                                 withString:@"[(u)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🌙"
+                                 withString:@"[(S)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🌟"
+                                 withString:@"[(*)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🌞"
+                                 withString:@"[(#)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😂"
+                                 withString:@"[(R)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        
+        [retText replaceOccurrencesOfString:@"😚"
+                                 withString:@"[(})]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        
+        [retText replaceOccurrencesOfString:@"😍"
+                                 withString:@"[({)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"💋"
+                                 withString:@"[(k)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🌹"
+                                 withString:@"[(F)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"👏"
+                                 withString:@"[(W)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"👍"
+                                 withString:@"[(D)]"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"👎"
+                                 withString:@"/:weak"
+                                    options:NSLiteralSearch
+                                      range:range];
+    }
+    
+    return retText;
+}
+
++ (NSString *)convertToSystemEmoticons:(NSString *)text
+{
+    if (![text isKindOfClass:[NSString class]]) {
+        return @"";
+    }
+    
+    if ([text length] == 0) {
+        return @"";
+    }
+    int allEmoticsCount = (int)[[Emoji allEmoji] count];
+    NSMutableString *retText = [[NSMutableString alloc] initWithString:text];
+    for(int i=0; i<allEmoticsCount; ++i) {
+        NSRange range;
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[):]"
+                                 withString:@"😊"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:D]"
+                                 withString:@"😃"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[;)]"
+                                 withString:@"😉"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:-o]"
+                                 withString:@"😮"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:p]"
+                                 withString:@"😋"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(H)]"
+                                 withString:@"😎"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:@]"
+                                 withString:@"😡"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:s]"
+                                 withString:@"😖"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:$]"
+                                 withString:@"😳"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:(]"
+                                 withString:@"😞"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:'(]"
+                                 withString:@"😭"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:|]"
+                                 withString:@"😐"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+//        range.location = 0;
+//        range.length = retText.length;
+//        [retText replaceOccurrencesOfString:@"[(a)]"
+//                                 withString:@"😇"
+//                                    options:NSLiteralSearch
+//                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[8o|]"
+                                 withString:@"😬"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[8-|]"
+                                 withString:@"😆"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[+o(]"
+                                 withString:@"😱"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[<o)]"
+                                 withString:@"🎅"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[|-)]"
+                                 withString:@"😴"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[*-)]"
+                                 withString:@"😕"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:-#]"
+                                 withString:@"😷"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[:-*]"
+                                 withString:@"😯"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[^o)]"
+                                 withString:@"😏"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[8-)]"
+                                 withString:@"😑"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(|)]"
+                                 withString:@"💖"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(u)]"
+                                 withString:@"💔"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(S)]"
+                                 withString:@"🌙"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(*)]"
+                                 withString:@"🌟"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(#)]"
+                                 withString:@"🌞"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(R)]"
+                                 withString:@"😂"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        
+        [retText replaceOccurrencesOfString:@"[(})]"
+                                 withString:@"😚"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        
+        [retText replaceOccurrencesOfString:@"[({)]"
+                                 withString:@"😍"
+                                    options:NSLiteralSearch
+                                      range:range];
+
+        
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(k)]"
+                                 withString:@"💋"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(F)]"
+                                 withString:@"🌹"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(W)]"
+                                 withString:@"👏"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"[(D)]"
+                                 withString:@"👍"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:weak"
+                                 withString:@"👎"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+    }
+    
+    return retText;
+}
+
+//zou 2015-12-10 表情转换为微信表情
++ (NSString *)convertToWebChatEmoticons:(NSString *)text
+{
+    int allEmoticsCount = (int)[Emoji allEmoji].count;
+    NSMutableString *retText = [[NSMutableString alloc] initWithString:text];
+    for(int i=0; i<allEmoticsCount; ++i) {
+        NSRange range;
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😊"
+                                 withString:@"/::)"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😃"
+                                 withString:@"/::D"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😉"
+                                 withString:@"/::P"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😮"
+                                 withString:@"/::|"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😋"
+                                 withString:@"/:,@P"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😎"
+                                 withString:@"/:8-)"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😡"
+                                 withString:@"/::@"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😖"
+                                 withString:@"/::Q"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😳"
+                                 withString:@"/::|"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😞"
+                                 withString:@"/::-|"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😭"
+                                 withString:@"/::<"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😐"
+                                 withString:@"/::("
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+//        range.location = 0;
+//        range.length = retText.length;
+//        [retText replaceOccurrencesOfString:@"😇"
+//                                 withString:@"[(a)]"
+//                                    options:NSLiteralSearch
+//                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😬"
+                                 withString:@"/:B-)"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😆"
+                                 withString:@"/::>"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😱"
+                                 withString:@"/:!!!"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🎅"
+                                 withString:@"/::+"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😴"
+                                 withString:@"/::Z"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😕"
+                                 withString:@"/:,@o"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😷"
+                                 withString:@""
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😯"
+                                 withString:@"/::d"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😏"
+                                 withString:@"/:X-)"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😑"
+                                 withString:@"/::L"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"💖"
+                                 withString:@"/:heart"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"💔"
+                                 withString:@"/:break"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🌙"
+                                 withString:@"/:moon"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🌟"
+                                 withString:@"/:sun"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🌞"
+                                 withString:@"/:sun"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"😂"
+                                 withString:@""
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        
+        [retText replaceOccurrencesOfString:@"😚"
+                                 withString:@"/::*"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        
+        [retText replaceOccurrencesOfString:@"😍"
+                                 withString:@"/::B"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"💋"
+                                 withString:@"/:showlove"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"🌹"
+                                 withString:@"/:rose"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"👏"
+                                 withString:@"/:handclap"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"👍"
+                                 withString:@"/:strong"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"👎"
+                                 withString:@"/:weak"
+                                    options:NSLiteralSearch
+                                      range:range];
+    }
+    return retText;
+}
+
+//微信表情转换为环信表情
++ (NSString *)convertHuanXinEmoticons:(NSString *)text
+{
+    int allEmoticsCount = (int)[Emoji allEmoji].count;
+    NSMutableString *retText = [[NSMutableString alloc] initWithString:text];
+    
+    
+    for(int i=0; i<allEmoticsCount; ++i) {
+        NSRange range;
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::)"
+                                 withString:@"😊"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::D"
+                                 withString:@"😃"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::P"
+                                 withString:@"😉"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::|"
+                                 withString:@"😮"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:,@P"
+                                 withString:@"😋"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:8-)"
+                                 withString:@"😎"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::@"
+                                 withString:@"😡"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::Q"
+                                 withString:@"😖"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::|"
+                                 withString:@"😳"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::-|"
+                                 withString:@"😞"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::<"
+                                 withString:@"😭"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::("
+                                 withString:@"😐"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+//        range.location = 0;
+//        range.length = retText.length;
+//        [retText replaceOccurrencesOfString:@"[(a)]"
+//                                 withString:@"😇"
+//                                    options:NSLiteralSearch
+//                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:B-)"
+                                 withString:@"😬"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::>"
+                                 withString:@"😆"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:!!!"
+                                 withString:@"😱"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::+"
+                                 withString:@"🎅"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::Z"
+                                 withString:@"😴"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:,@o"
+                                 withString:@"😕"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@""
+                                 withString:@"😷"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::d"
+                                 withString:@"😯"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:X-)"
+                                 withString:@"😏"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/::L"
+                                 withString:@"😑"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:heart"
+                                 withString:@"💖"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:break"
+                                 withString:@"💔"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:moon"
+                                 withString:@"🌙"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:sun"
+                                 withString:@"🌟"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:sun"
+                                 withString:@"🌞"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@""
+                                 withString:@"😂"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        
+        [retText replaceOccurrencesOfString:@"/::*"
+                                 withString:@"😚"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        
+        [retText replaceOccurrencesOfString:@"/::B"
+                                 withString:@"😍"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:showlove"
+                                 withString:@"💋"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:rose"
+                                 withString:@"🌹"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:handclap"
+                                 withString:@"👏"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:strong"
+                                 withString:@"👍"
+                                    options:NSLiteralSearch
+                                      range:range];
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@"/:weak"
+                                 withString:@"👎"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@""
+                                 withString:@"😳"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@""
+                                 withString:@"😱"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        range.location = 0;
+        range.length = retText.length;
+        [retText replaceOccurrencesOfString:@""
+                                 withString:@"😉"
+                                    options:NSLiteralSearch
+                                      range:range];
+        
+        static NSArray *strArray = nil;
+        if (strArray == nil) {
+            strArray = [NSArray arrayWithObjects:kStr_01,kStr_02,kStr_03,kStr_04,kStr_05,kStr_06,kStr_07,kStr_08,kStr_09,kStr_10, kStr_11,kStr_12,kStr_13,kStr_14,kStr_15,kStr_16,kStr_17,kStr_18,kStr_19, kStr_20,kStr_21,kStr_22,kStr_23,kStr_24,kStr_25,kStr_26,kStr_27,kStr_28,kStr_29,kStr_30,kStr_31,kStr_32,kStr_33,kStr_34,kStr_35,kStr_36,kStr_37,kStr_38,kStr_39,kStr_40,kStr_41,kStr_42,kStr_43,kStr_44,kStr_45,kStr_46,kStr_47,kStr_48,kStr_49,kStr_50,kStr_51,kStr_52,kStr_53,kStr_54,kStr_55,kStr_56,kStr_57,kStr_58,kStr_59,kStr_60,kStr_61,kStr_62,kStr_63,kStr_64,kStr_65,kStr_66,kStr_67,kStr_68,kStr_69,kStr_70,kStr_71,kStr_72,kStr_73,kStr_74,kStr_75,kStr_76,kStr_77,kStr_78,kStr_79,kStr_80,kStr_81,kStr_82,kStr_83,kStr_84,kStr_85,kStr_86,kStr_87,nil];
+        }
+        @try {
+            [strArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([retText containsString:obj]) {
+                    [retText replaceOccurrencesOfString:obj withString:@"[该表情不支持]" options:NSLiteralSearch range:range];
+                }
+                
+            }];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"throw exception is  here!!");
+        }
+        @finally {
+            nil;
+        }
+        
+            }
+    return retText;
+}
+
+
+@end

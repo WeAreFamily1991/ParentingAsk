@@ -1,0 +1,186 @@
+//
+//  MainTabBarViewController.m
+//  ChinaPoetryNet
+//
+//  Created by User on 5/6/15.
+//  Copyright (c) 2015 User. All rights reserved.
+//
+
+#import "MainTabBarViewController.h"
+#import "PersonalVC.h"
+#import "MessageVC.h"
+#import "ConnectsVC.h"
+#import "MainVC.h"
+#import "AppDelegate.h"
+
+#define btnHeight 49
+#define btnWidth 80
+#define tabBarHeight 49
+#define mainDetailColor [UIColor colorWithRed:151.0/255 green:151.0/255 blue:151.0/255 alpha:1]
+#define mainGreenColor [UIColor colorWithRed:58.0/255 green:178.0/255 blue:50.0/255 alpha:1]
+
+@interface MainTabBarViewController ()
+@property (strong,nonatomic)MainVC *mainvc;
+@end
+
+@implementation MainTabBarViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    //创建视图控制器
+    [self initViewContollers];
+    //创建TabBar
+    [self initTabBar];
+    // Do any additional setup after loading the view.
+}
+
+- (void)initViewContollers
+{
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    PersonalVC *personal = [story instantiateViewControllerWithIdentifier:@"StoryIDPersonal"];
+    personal.isShowBack = YES;
+    UINavigationController *personNav = [[UINavigationController alloc] initWithRootViewController:personal];
+    
+    _mainvc = [[MainVC alloc] init];
+    UINavigationController *mainNav = [[UINavigationController alloc] initWithRootViewController:_mainvc];
+
+    
+    MessageVC *conVc = [[MessageVC alloc] init];
+    conVc.isShowBack = YES;
+    [conVc obtainPersons];
+    UINavigationController *conNav = [[UINavigationController alloc] initWithRootViewController:conVc];
+
+
+    
+    self.viewControllers = [[NSArray alloc] initWithObjects:mainNav,conNav,personNav, nil];
+    [AppDelegate shareAppDelegate].tabVC=self;
+}
+
+- (void)initTabBar
+{
+    //隐藏自带的TabBar
+    self.tabBar.hidden = YES;
+    
+    float gapWidth = (self.view.frame.size.width - 3*btnWidth)/6;
+    _tabbarView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - tabBarHeight, self.view.frame.size.width, tabBarHeight)];
+    _tabbarView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:_tabbarView];
+    
+    UIImageView *liner = [[UIImageView alloc] init];
+    liner.backgroundColor = [UIColor colorWithRed:211.0/255 green:209.0/255 blue:211.0/255 alpha:1];
+    liner.frame = CGRectMake(0, 0, ScreenWidth, 1);
+    [_tabbarView addSubview:liner];
+    //消息的按钮
+    _msgBtn = [[CustomButton alloc] initWithFrame:CGRectMake(gapWidth, 0, btnWidth, btnHeight) withIcon:@"icon1_nor" withName:@"消息" withIsShowNum:NO];
+    _msgBtn.nameLabel.textColor = mainDetailColor;
+    [_msgBtn addTarget:self action:@selector(itemBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    _msgBtn.tag = 1;
+    [_tabbarView addSubview:_msgBtn];
+    
+    //联系人的按钮
+    _conBtn = [[CustomButton alloc] initWithFrame:CGRectMake(3*gapWidth + btnWidth, 0, btnWidth, btnHeight) withIcon:@"icon2_nor" withName:@"联系人" withIsShowNum:NO];
+    _conBtn.nameLabel.textColor = mainDetailColor;
+    [_conBtn addTarget:self action:@selector(itemBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    _conBtn.tag = 2;
+    [_tabbarView addSubview:_conBtn];
+
+    //设置的按钮
+    _setBtn = [[CustomButton alloc] initWithFrame:CGRectMake(5*gapWidth + 2*btnWidth, 0, btnWidth, btnHeight) withIcon:@"icon3_nor" withName:@"设置" withIsShowNum:NO];
+    _setBtn.nameLabel.textColor = mainDetailColor;
+    [_setBtn addTarget:self action:@selector(itemBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    _setBtn.tag = 3;
+    [_tabbarView addSubview:_setBtn];
+    
+    
+    //联系人未读消息数
+    if (!_contactBadgeView) {
+        CGRect frame=_conBtn.bounds;
+        frame.origin.y=-10;
+        frame.origin.x=20;
+        _contactBadgeView=[[BPMKNumberBadgeView alloc] initWithFrame:frame];
+        [_conBtn addSubview:_contactBadgeView];
+        _contactBadgeView.hideWhenZero=YES;
+        _contactBadgeView.shadow=NO;
+        _contactBadgeView.shine=NO;
+        _contactBadgeView.value=1;
+        _contactBadgeView.userInteractionEnabled=NO;
+    }
+    [self itemBtnClick:_msgBtn];
+}
+#pragma mark 点击个人中心
+- (void)clickPersonal:(CustomButton *)sender
+{
+//    UIAlertView * alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:@"是否更新版本" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+//    
+//    [alertview show];
+    
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    PersonalVC *personal = [story instantiateViewControllerWithIdentifier:@"StoryIDPersonal"];
+    [self.navigationController pushViewController:personal animated:YES];
+}
+//Travel
+- (void)itemBtnClick:(CustomButton *)sender{
+    if (sender==_conBtn) {
+        [self itemBtnClick:_msgBtn changeColorOnly:NO];
+        [_mainvc clickChoose:_mainvc.btnConnects];
+    }else if (sender==_msgBtn) {
+        [self itemBtnClick:_msgBtn changeColorOnly:NO];
+        [_mainvc clickChoose:_mainvc.btnMessages];
+    }else{
+        [self itemBtnClick:sender changeColorOnly:NO];
+    }
+    [self appearTabbarView];
+}
+//Travel
+- (void)itemBtnClick:(CustomButton *)sender changeColorOnly:(BOOL)changeColorOnly
+{
+    //Travel
+    if (!changeColorOnly) {
+        self.selectedIndex = sender.tag -1 ;
+    }
+    //
+    _msgBtn.nameLabel.textColor = mainDetailColor;
+    _msgBtn.iconView.image = [UIImage imageNamed:@"icon1_nor"];
+    
+    _conBtn.nameLabel.textColor = mainDetailColor;
+    _conBtn.iconView.image = [UIImage imageNamed:@"icon2_nor"];
+    
+    _setBtn.nameLabel.textColor = mainDetailColor;
+    _setBtn.iconView.image = [UIImage imageNamed:@"icon3_nor"];
+    
+    sender.nameLabel.textColor = mainGreenColor;
+    sender.iconView.image = [UIImage imageNamed:[NSString stringWithFormat:@"icon%d_pre",(int)sender.tag]];
+}
+
+- (void)hiddenTabbarView
+{
+    [UIView animateWithDuration:0.35 animations:^{
+//        _tabbarView.frame = CGRectMake(-self.view.frame.size.width, self.view.frame.size.height - tabBarHeight, self.view.frame.size.width, tabBarHeight);
+        _tabbarView.frame = CGRectMake(0, self.view.frame.size.height + tabBarHeight, self.view.frame.size.width, tabBarHeight);
+
+    }];
+}
+
+- (void)appearTabbarView
+{
+    [UIView animateWithDuration:0.35 animations:^{
+        _tabbarView.frame = CGRectMake(0, self.view.frame.size.height - tabBarHeight, self.view.frame.size.width, tabBarHeight);
+    }];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

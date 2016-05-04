@@ -1,0 +1,10 @@
+
+// 登录页
+
+#import "BaseTVC.h"
+
+@interface LoginVC : BaseTVC
+
+- (void)clickLogin;
+
+@end

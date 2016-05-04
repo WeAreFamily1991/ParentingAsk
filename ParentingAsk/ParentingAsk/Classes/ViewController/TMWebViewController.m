@@ -1,0 +1,264 @@
+//
+//  TMWebViewController.m
+//  Tommy
+//
+//  Created by Moses on 14-6-10fhfhf
+//
+//
+
+#import "TMWebViewController.h"
+#import "YKProgressHUD.h"
+
+#import "AppDelegate.h"
+
+@interface TMWebViewController ()
+{
+    NSString        *shareContent;  // 分享内容
+    NSString        *shareImageUrl; // 分享图片地址
+    NSString        *shareUrl;      // 分享地址
+}
+
+@end
+
+@implementation TMWebViewController
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil withUrl:(NSString *)urlStr andTitle:(NSString *)aTitle
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+        self.mUrlString = urlStr;
+        self.mTitle     = aTitle;
+    }
+    return self;
+}
+
+// 设置分享参数字典
+- (void)setShareDictionery:(NSDictionary *)aDict
+{
+    shareContent    = [aDict objectForKey:@"shareContent"];
+    shareImageUrl   = [aDict objectForKey:@"shareImageUrl"];
+    shareUrl        = [aDict objectForKey:@"shareUrl"];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+
+    // 设置标题
+    self.title                  = @"通知详情";
+    mWebview                    = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth,ScreenHeight)];
+    mWebview.delegate           = self;
+    mWebview.backgroundColor    = [UIColor clearColor];
+    mWebview.backgroundColor    = [UIColor whiteColor];
+	mWebview.scalesPageToFit    = YES;
+//	mWebview.autoresizingMask   = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+    [self.view addSubview:mWebview];
+    
+    [mWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.mUrlString]]];
+    
+//    if ( shareContent && shareUrl ) {
+//        
+//        // 下载分享的图片
+//        
+//        [[SDWebImageManager sharedManager] downloadWithURL:urlWithStr(shareImageUrl) options:SDWebImageProgressiveDownload progress:^(NSUInteger receivedSize, long long expectedSize) {
+//            
+//        } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished) {
+//            if (image) {
+//                [self SaveImageToLocal:image];
+//            }
+//            else {
+//                NSLog(@"封面图片下载图片失败===%@",error.localizedFailureReason);
+//            }
+//        }];
+//        
+//        // 新浪分享初始化
+//        [self initSinaEngine];
+//        
+//    }
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{    
+    [super viewWillAppear:animated];
+    
+    [[UIApplication sharedApplication] setStatusBarStyle: UIStatusBarStyleBlackOpaque animated:NO];
+        
+    [AppDelegate shareAppDelegate].tabVC.tabBar.hidden = YES;
+    
+    self.navigationController.navigationBarHidden = self.mNavBarHidden;
+    if (self.mNavBarHidden) {
+        if (iOS7) {
+            // 与baseview中差不多相反的操作，模态的时候状态条显示
+            self.edgesForExtendedLayout                         = UIRectEdgeAll;
+//            self.wantsFullScreenLayout                          = YES;
+            self.modalPresentationCapturesStatusBarAppearance   = YES;
+            self.extendedLayoutIncludesOpaqueBars               = NO;
+            self.automaticallyAdjustsScrollViewInsets           = NO;
+            self.modalPresentationCapturesStatusBarAppearance   = NO;
+        }
+        self.navigationController.navigationBar.translucent     = NO;
+        CGRect rect             = mWebview.frame;
+        rect.origin.y           = 20;
+        rect.size.height        = ScreenHeight-20;
+        mWebview.frame          = rect;
+        UIView *view            = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+        view.backgroundColor    = [UIColor colorWithRed:0.984 green:0.216 blue:0.157 alpha:1.000];
+        [self.view addSubview:view];
+    }
+}
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    // 清除Cookie
+    NSHTTPCookie *cookie;
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (cookie in [storage cookies])
+    {
+        [storage deleteCookie:cookie];
+    }
+    
+    // 修改一期遗留Bug QiangGe 2015-08-19
+    [self clearWebViewCacheWithWebView:mWebview];
+    mWebview = nil;
+    
+    if (iOS7) {
+        self.edgesForExtendedLayout                         = UIRectEdgeNone;
+//        self.wantsFullScreenLayout                          = YES;
+        self.extendedLayoutIncludesOpaqueBars               = YES;
+        self.automaticallyAdjustsScrollViewInsets           = YES;
+        self.modalPresentationCapturesStatusBarAppearance   = YES;
+        self.navigationController.navigationBar.translucent = YES;
+    }
+    self.navigationController.navigationBarHidden = NO;
+    
+
+    
+}
+
+#pragma mark == 清除web缓存
+- (void)clearWebViewCacheWithWebView:(UIWebView *)webview
+{
+    NSURLCache * cache = [NSURLCache sharedURLCache];
+    [cache removeAllCachedResponses];
+    [cache setDiskCapacity:0];
+    [cache setMemoryCapacity:0];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    [webview clearsContextBeforeDrawing];
+}
+
+#pragma mark uiwebview delegate
+- (void)webViewDidStartLoad:(UIWebView *)webView
+{
+    [self clearWebViewCacheWithWebView:webView];
+    [YKProgressHUD showHUDAddedTo:self.view animated:YES withText:@"加载中..." HUDCenter:self.view.center];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    [YKProgressHUD hideHUDForView:self.view animated:YES];
+    
+    NSLog(@"%@",[webView.request.URL description]);
+    
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    [YKProgressHUD hideHUDForView:self.view animated:YES];
+}
+//-(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+//{
+////    if (stringIsEmpty(self.mTitle)) {
+////        self.title = [webView stringByEvaluatingJavaScriptFromString:@"document.title"];
+////    }
+//    
+//    NSURL *webUrl = request.URL;
+//    NSLog(@"[the url　absoluteString is] %@",[webUrl absoluteString]);
+//    NSLog(@"[the url　scheme is] %@",[webUrl scheme]);
+//    NSLog(@"[the url　host is]:%@",[webUrl host]);
+//    NSLog(@"[the url　pathComponents is] %@",[webUrl pathComponents]);
+//    NSLog(@"[the url　resourceSpecifier is] %@",[webUrl resourceSpecifier]);
+//    NSLog(@"[the url　qury is] %@",[webUrl query]);
+////    if ([[webUrl absoluteString] rangeOfString:@"goods/list" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+////        
+////        [self goBack];
+////        return NO;
+////    }
+////    // 匹配到规则时候
+////    if ([[webUrl scheme] compare:@"openApp" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+////        return [self openAppPageWithUrlSchemeStr:webUrl];
+////    }
+//    
+//    return YES;
+//}
+
+
+#pragma mark == openPage
+- (BOOL)openAppPageWithUrlSchemeStr:(NSURL *)urlScheme
+{
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    
+    // 把url.query  赋值给对模块实例的对应属性（取URL ？后边的字符串 然后已&符号隔开）
+    NSArray *queryKeyValArray = [[urlScheme query] componentsSeparatedByString:@"&"];
+    for ( NSString *s in queryKeyValArray )
+    {
+        NSArray *kvArray = [s componentsSeparatedByString:@"="];
+        
+        if ( [kvArray count] == 2 ) {
+            NSString *key = [kvArray objectAtIndex:0];
+            NSString *val =[ [kvArray objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            
+            if ( [key length] > 0 ) {
+                [params setObject:val forKey:key];
+            }
+        }
+    }
+    
+    NSString *urlHost = [urlScheme host];
+    
+    if ([urlHost isEqualToString:@"productDetails"]) {
+        // 进入商品详情
+      
+        //[params getString:@"type"]
+        
+    }
+    else if ([urlHost isEqualToString:@"web"]) {
+        // 进入本页面的跳转url
+        return YES;
+    }
+    else {
+        return YES;
+    }
+    
+    return NO;
+}
+
+
+- (IBAction)dismissSelfView
+{
+    [self goBack];
+}
+
+-(void)goBack
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+-(void)dismissSelfViewWith:(void(^)(void))completion
+{
+    [self dismissSelfView];
+    
+    double delayInSeconds = 0.5;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        completion();
+    });
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+@end
